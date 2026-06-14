@@ -1,0 +1,19 @@
+{
+  "name": "RedeCalc Pro MT/BT",
+  "short_name": "RedeCalc",
+  "description": "Lista de materiais e imagens ilustrativas para estruturas de média e baixa tensão.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

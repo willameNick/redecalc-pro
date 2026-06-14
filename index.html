@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RedeCalc Pro - MT/BT</title>
+<meta name="theme-color" content="#f97316">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0b1220;--card:#121c2e;--card2:#1b2940;--text:#f8fafc;--muted:#94a3b8;--accent:#f97316;--green:#22c55e;--line:#26364f;--warn:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1e3a5f,#0b1220 45%);color:var(--text);max-width:430px;margin:auto;min-height:100vh}
+.app{padding:18px 16px 90px}.screen{display:none}.screen.active{display:block}
+h1,h2,h3{margin:0}h1{font-size:25px}h2{font-size:21px;margin-bottom:12px}h3{font-size:16px}
+p{line-height:1.35}.muted{color:var(--muted);font-size:13px}.tiny{color:var(--muted);font-size:12px}
+.card{background:linear-gradient(180deg,var(--card),#0d1626);border:1px solid var(--line);border-radius:22px;padding:15px;margin-bottom:13px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.badge{padding:5px 9px;border-radius:999px;background:#122d1d;color:#86efac;border:1px solid #14532d;font-size:12px}
+.btn{width:100%;border:0;border-radius:15px;padding:14px;background:var(--accent);color:#111827;font-weight:900;font-size:15px;cursor:pointer}.btn.secondary{background:var(--card2);border:1px solid var(--line);color:var(--text)}.btn.small{width:auto;padding:8px 11px;font-size:12px}
+label{display:block;margin:11px 0 6px;color:#cbd5e1;font-weight:bold;font-size:14px}select,input{width:100%;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:15px;padding:13px;font-size:16px}
+.item{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}.item:last-child{border-bottom:0}.item strong{text-align:right}
+.warn{background:#3a2712;border:1px solid #92400e;color:#fde68a;border-radius:15px;padding:12px;margin-bottom:10px}.ok{background:#10281b;border:1px solid #14532d;color:#bbf7d0;border-radius:15px;padding:12px;margin-bottom:10px}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0c1525;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 4px 10px;z-index:10}
+.tab{background:transparent;color:var(--muted);border:0;font-size:11px;padding:4px;cursor:pointer}.tab span{display:block;font-size:20px}.tab.active{color:var(--accent)}
+.diagram{background:#e8f3ff;border-radius:18px;padding:10px;margin:10px 0;color:#111}.diagram svg{width:100%;height:auto;display:block}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:999px;padding:8px 11px;cursor:pointer}.chip.active{background:var(--accent);color:#111;font-weight:bold}
+.poleArt{height:210px;position:relative;border-radius:24px;background:linear-gradient(180deg,#60a5fa,#dbeafe 58%,#14532d);overflow:hidden;margin-bottom:14px}.pole{position:absolute;left:198px;top:42px;width:18px;height:155px;background:linear-gradient(90deg,#6b7280,#e5e7eb,#6b7280);border-radius:8px}.cross{position:absolute;left:110px;top:70px;width:190px;height:15px;background:#7c2d12;border-radius:8px;box-shadow:0 12px 0 #7c2d12}.wire{position:absolute;left:0;right:0;height:3px;background:#111827}.w1{top:67px}.w2{top:100px}.w3{top:132px}.ins{position:absolute;width:16px;height:20px;background:#e0f2fe;border:2px solid #0369a1;border-radius:50%;top:59px}.i1{left:132px}.i2{left:198px}.i3{left:264px}
+@media print{body{background:#fff;color:#000;max-width:none}.tabs,.btn,.noPrint{display:none}.card{box-shadow:none;border:1px solid #ccc;background:#fff;color:#000}.muted,.tiny{color:#333}.app{padding:10px}.screen{display:block}.screen:not(#results){display:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<section id="home" class="screen active">
+<div class="row" style="margin-bottom:14px"><div><div class="muted">Lista de material</div><h1>RedeCalc Pro</h1></div><span class="badge">NT.00006.EQTL</span></div>
+<div class="poleArt"><div class="wire w1"></div><div class="wire w2"></div><div class="wire w3"></div><div class="pole"></div><div class="cross"></div><div class="ins i1"></div><div class="ins i2"></div><div class="ins i3"></div></div>
+<div class="card"><h2>Estruturas de média e baixa tensão</h2><p class="muted">App atualizado com base na norma Equatorial NT.00006.EQTL, revisão 04/2025. Gera lista consolidada e mostra desenho ilustrativo da montagem.</p><button class="btn" onclick="go('select')">CRIAR LISTA DE MATERIAL</button></div>
+<div class="card"><h3>Estruturas cadastradas</h3><div class="item"><span>Média tensão</span><strong>N1, N2, N3, N4, N3-N3, CE1, CE1a</strong></div><div class="item"><span>Baixa tensão</span><strong>S1I, S3I, S4I</strong></div><div class="item"><span>Postes</span><strong>9-300 a 13-1500</strong></div></div>
+</section>
+
+<section id="select" class="screen">
+<h2>Selecionar estrutura</h2>
+<div class="card">
+<label>Qual poste?</label><select id="poleSelect"></select>
+<label>Estrutura primária / média tensão</label><select id="primarySelect"></select>
+<label>Estrutura secundária / baixa tensão</label><select id="secondarySelect"></select>
+<label>Quantidade de estruturas iguais</label><input id="qtySelect" type="number" value="1" min="1">
+<br><br><button class="btn" onclick="generateList()">Gerar lista</button><br><br><button class="btn secondary" onclick="go('home')">Voltar</button>
+</div>
+</section>
+
+<section id="results" class="screen">
+<div class="row"><h2>Lista gerada</h2><button class="btn small secondary" onclick="window.print()">PDF</button></div>
+<div class="card"><h3>Resumo</h3><div class="item"><span>Poste</span><strong id="outPole"></strong></div><div class="item"><span>Primária</span><strong id="outPrimary"></strong></div><div class="item"><span>Secundária</span><strong id="outSecondary"></strong></div><div class="item"><span>Quantidade</span><strong id="outQty"></strong></div></div>
+<div id="warningBox"></div>
+<div class="card"><h3>Imagem da estrutura</h3><div id="diagramArea"></div></div>
+<div class="card"><h3>Materiais consolidados</h3><div id="materialList"></div></div>
+<div class="card"><h3>Materiais por estrutura</h3><div id="structureDetails"></div></div>
+<button class="btn" onclick="go('select')">Editar seleção</button><br><br><button class="btn secondary" onclick="go('home')">Nova lista</button>
+</section>
+
+<section id="database" class="screen">
+<h2>Banco de estruturas</h2>
+<div class="card noPrint"><div class="chips" id="chips"></div></div>
+<div id="dbContent"></div>
+</section>
+
+<section id="about" class="screen">
+<h2>Sobre</h2>
+<div class="card"><h3>Base normativa</h3><p class="muted">A norma informa tensão primária de 13,8 kV, tensão secundária 380/220 V ou 220/127 V, poste de concreto duplo T e cruzetas de fibra de vidro tipo L de 1.700 mm e tipo T de 1.900 mm.</p><div class="warn">Use como lista de apoio. A execução deve seguir projeto aprovado, padrão da concessionária, NR-10 e responsável técnico.</div></div>
+</section>
+</div>
+
+<nav class="tabs">
+<button class="tab active" onclick="go('home',this)"><span>🏠</span>Início</button>
+<button class="tab" onclick="go('select',this)"><span>🧾</span>Lista</button>
+<button class="tab" onclick="go('database',this)"><span>📦</span>Banco</button>
+<button class="tab" onclick="go('about',this)"><span>ℹ️</span>Sobre</button>
+</nav>
+
+<script>
+const poles=["9-300","9-600","10-300","11-300","11-600","11-1000","11-1500","12-600","12-1000","12-1500","13-1500"];
+
+const primaryStructures={
+"Sem primária":{ref:"",type:"none",items:{}},
+"N1":{ref:"Desenho 67 / Quadro 50",type:"N1",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":1,"Isolador pilar 15 kV":3,"Pino auto travante":3,"Laço pré-formado de topo":3,"Arruela quadrada 38x38x3 mm Ø18 mm":4}},
+"N2":{ref:"Desenho 68 / Quadro 52",type:"N2",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Isolador pilar 15 kV":6,"Pino auto travante":6,"Laço pré-formado duplo lateral":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
+"N3":{ref:"Desenho 69 / Quadro 54",type:"N3",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Alça pré-formada distribuição":3,"Isolador ancoragem polimérico 15 kV":3,"Manilha sapatilha para alça pré-formada":3,"Gancho olhal para 5.000 daN":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
+"N4":{ref:"Desenho 70 / Quadro 56",type:"N4",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Alça pré-formada distribuição":6,"Isolador ancoragem polimérico 15 kV":6,"Isolador pilar 15 kV":3,"Pino auto travante":3,"Laço pré-formado de topo":3,"Conector cunha":3,"Manilha sapatilha para alça pré-formada":6,"Gancho olhal para 5.000 daN":6,"Porca olhal rosca M16x2":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
+"N3-N3":{ref:"Desenho 79 / Quadro 71",type:"N3N3",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":4,"Alça pré-formada distribuição":6,"Isolador ancoragem polimérico 15 kV":6,"Isolador pilar 15 kV":2,"Pino auto travante":2,"Laço pré-formado de topo":2,"Conector cunha":3,"Manilha sapatilha para alça pré-formada":6,"Gancho olhal para 5.000 daN":6,"Arruela quadrada 38x38x3 mm Ø18 mm":24,"Porca quadrada rosca M16x2":8}},
+"CE1":{ref:"Cadastro inicial informado pelo usuário",type:"CE1",items:{"Braço L":1,"Parafuso 16x250 mm":2}},
+"CE1a":{ref:"Cadastro inicial informado pelo usuário",type:"CE1a",items:{"Braço L":1,"Parafuso 16x250 mm":3,"Estribo":1,"Espaçador losangular":1,"Braço antibalanço":1}},
+"CE2":{ref:"Pendente de cadastro",type:"CE",items:{}},
+"CE3":{ref:"Pendente de cadastro",type:"CE",items:{}},
+"CE4":{ref:"Pendente de cadastro",type:"CE",items:{}}
+};
+
+const secondaryStructures={
+"Sem secundária":{ref:"",type:"none",items:{}},
+"S1I":{ref:"Desenho 29 / Quadro 1",type:"S1",items:{"Poste de concreto seção DT":1,"Armação secundária 1 estribo":1,"Isolador roldana para 750 V":1,"Laço pré-formado para isolador roldana":1,"Abraçadeira plástica":2,"Arruela quadrada 38x38x3 mm Ø18 mm":1}},
+"S3I":{ref:"Desenho 31 / Quadro 3",type:"S3",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":1,"Sapatilha aço galvanizado":1,"Abraçadeira plástica":3,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Fio de aço cobreado 16 mm²":1.6,"Haste terra aço-cobreado Ø16 x 2.400 mm":1,"Conector cunha cobre estanhado":1,"Fita de aço inoxidável":1,"Fecho fita aço inox":1}},
+"S4I":{ref:"Desenho 35/36 / Quadros 8 e 9",type:"S4",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":2,"Sapatilha para cabo aço 6,5 a 9,5 mm":2,"Abraçadeira plástica":2,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Porca olhal rosca M16x2":1,"Conector cunha alumínio":1,"Conector perfurante":3}},
+"S4I com aterramento":{ref:"Desenho 35 / Quadro 8",type:"S4",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":2,"Sapatilha para cabo aço 6,5 a 9,5 mm":2,"Abraçadeira plástica":6,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Porca olhal rosca M16x2":1,"Conector cunha alumínio":1,"Conector cunha cobre estanhado":1,"Fio de aço cobreado 16 mm²":1.6,"Haste terra aço-cobreado Ø16 x 2.400 mm":1,"Conector cunha para haste de aterramento":1,"Fita isolante PVC":1,"Fita auto fusão":1}}
+};
+
+function svgStructure(kind, title){
+ const mtWires=`<line x1="10" y1="58" x2="390" y2="58" stroke="#111" stroke-width="3"/><line x1="10" y1="98" x2="390" y2="98" stroke="#111" stroke-width="3"/><line x1="10" y1="138" x2="390" y2="138" stroke="#111" stroke-width="3"/>`;
+ const pole=`<rect x="192" y="35" width="18" height="250" rx="8" fill="#777"/><rect x="198" y="35" width="6" height="250" fill="#ddd"/>`;
+ const cross1=`<rect x="88" y="82" width="224" height="14" rx="6" fill="#8b4513"/>`;
+ const cross2=`<rect x="88" y="128" width="224" height="14" rx="6" fill="#8b4513"/>`;
+ const insTop=`<circle cx="120" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="200" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="280" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/>`;
+ const insMid=`<circle cx="120" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="200" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="280" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/>`;
+ const anchors=`<circle cx="94" cy="120" r="9" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><circle cx="306" cy="120" r="9" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><path d="M94 120 C50 145 45 170 30 200" stroke="#111" stroke-width="3" fill="none"/><path d="M306 120 C350 145 355 170 370 200" stroke="#111" stroke-width="3" fill="none"/>`;
+ const bt=`<path d="M25 192 C110 170 290 215 375 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="200" cy="190" r="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="3"/>`;
+ let body="";
+ if(kind==="N1") body=mtWires+pole+cross1+insTop;
+ else if(kind==="N2") body=mtWires+pole+cross1+cross2+insTop+insMid;
+ else if(kind==="N3") body=mtWires+pole+cross1+cross2+anchors;
+ else if(kind==="N4") body=mtWires+pole+cross1+cross2+anchors+insTop;
+ else if(kind==="N3N3") body=mtWires+pole+cross1+cross2+anchors+`<path d="M94 78 C50 55 45 35 30 20" stroke="#111" stroke-width="3" fill="none"/><path d="M306 78 C350 55 355 35 370 20" stroke="#111" stroke-width="3" fill="none"/>`;
+ else if(kind==="S1") body=pole+bt+`<text x="218" y="195" fill="#111" font-size="12">roldana</text>`;
+ else if(kind==="S3") body=pole+`<path d="M30 190 C90 175 140 180 196 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="200" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><text x="218" y="195" fill="#111" font-size="12">fim de linha</text>`;
+ else if(kind==="S4") body=pole+`<path d="M30 190 C95 170 150 180 198 190" stroke="#111" stroke-width="8" fill="none"/><path d="M202 190 C250 200 305 210 375 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="185" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><circle cx="215" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><text x="230" y="195" fill="#111" font-size="12">amarração</text>`;
+ else if(kind==="CE1"||kind==="CE1a"||kind==="CE") body=pole+`<line x1="200" y1="110" x2="315" y2="80" stroke="#8b4513" stroke-width="15"/><line x1="10" y1="80" x2="390" y2="80" stroke="#111" stroke-width="3"/><circle cx="315" cy="80" r="11" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><text x="225" y="125" fill="#111" font-size="12">braço L</text>`;
+ else body=pole;
+ return `<div class="diagram"><svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" rx="16" fill="#e8f3ff"/><text x="18" y="26" font-size="18" font-weight="bold" fill="#111">${title}</text>${body}<rect x="0" y="274" width="400" height="26" fill="#14532d"/></svg></div>`;
+}
+
+function go(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));if(btn)btn.classList.add("active");renderDB();}
+function fillSelects(){poleSelect.innerHTML=poles.map(p=>`<option>${p}</option>`).join("");primarySelect.innerHTML=Object.keys(primaryStructures).map(p=>`<option>${p}</option>`).join("");secondarySelect.innerHTML=Object.keys(secondaryStructures).map(s=>`<option>${s}</option>`).join("");}
+function addItems(total,items,qty){Object.keys(items).forEach(n=>{total[n]=(total[n]||0)+items[n]*qty;});}
+function renderItems(items,qty=1){let keys=Object.keys(items);if(!keys.length)return `<p class="muted">Materiais ainda não cadastrados.</p>`;return keys.map(k=>`<div class="item"><span>${k}</span><strong>${items[k]*qty}</strong></div>`).join("");}
+function generateList(){
+ const pole=poleSelect.value, primary=primarySelect.value, secondary=secondarySelect.value, qty=parseInt(qtySelect.value||1);
+ const p=primaryStructures[primary], s=secondaryStructures[secondary], total={}, pending=[];
+ addItems(total,{["Poste "+pole]:1},qty); addItems(total,p.items,qty); addItems(total,s.items,qty);
+ if(!Object.keys(p.items).length && primary!=="Sem primária") pending.push(primary);
+ if(!Object.keys(s.items).length && secondary!=="Sem secundária") pending.push(secondary);
+ outPole.textContent=pole; outPrimary.textContent=primary; outSecondary.textContent=secondary; outQty.textContent=qty;
+ warningBox.innerHTML=pending.length?`<div class="warn">Estrutura(s) sem materiais cadastrados: <strong>${pending.join(", ")}</strong>. Lista parcial.</div>`:`<div class="ok">Lista gerada com estruturas cadastradas.</div>`;
+ diagramArea.innerHTML=svgStructure(p.type,primary)+svgStructure(s.type,secondary);
+ materialList.innerHTML=Object.keys(total).map(n=>`<div class="item"><span>${n}</span><strong>${total[n]}</strong></div>`).join("");
+ structureDetails.innerHTML=`<h3>Poste ${pole}</h3><div class="item"><span>Poste</span><strong>${qty}</strong></div><br><h3>${primary}</h3><p class="tiny">${p.ref}</p>${renderItems(p.items,qty)}<br><h3>${secondary}</h3><p class="tiny">${s.ref}</p>${renderItems(s.items,qty)}`;
+ go("results");
+}
+function renderDB(group="mt"){
+ chips.innerHTML=`<button class="chip ${group==="mt"?"active":""}" onclick="renderDB('mt')">Média tensão</button><button class="chip ${group==="bt"?"active":""}" onclick="renderDB('bt')">Baixa tensão</button>`;
+ const data=group==="mt"?primaryStructures:secondaryStructures;
+ dbContent.innerHTML=Object.keys(data).map(k=>`<div class="card"><h3>${k}</h3><p class="tiny">${data[k].ref||"—"}</p>${svgStructure(data[k].type,k)}${renderItems(data[k].items)}</div>`).join("");
+}
+fillSelects();renderDB();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.error));}
+</script>
+</body>
+</html>
