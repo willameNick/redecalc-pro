@@ -91,7 +91,11 @@ label{display:block;margin:11px 0 6px;color:#cbd5e1;font-weight:bold;font-size:1
 <br><br>
 <button class="btn secondary" onclick="saveProjectPDF()">Salvar relatório simples em PDF</button>
 <br><br>
-<div class="row"><button class="btn small secondary" onclick="downloadCSV()">CSV</button><button class="btn small secondary" onclick="downloadJSON()">JSON</button><button class="btn small secondary" onclick="copyLink()">Copiar coords</button></div>
+<div class="row"><button class="btn small secondary" onclick="downloadCSV()">CSV</button><button class="btn small secondary" onclick="downloadJSON()">JSON</button><button class="btn small secondary" onclick="downloadDXF()">DXF</button></div>
+<br>
+<button class="btn secondary" onclick="saveMemorialPDF()">Memorial descritivo PDF</button>
+<br><br>
+<button class="btn small secondary" onclick="copyLink()">Copiar coords</button>
 </div>
 </section>
 
@@ -316,6 +320,8 @@ function sheetMapSvg(){
    <text x="${p.x+14}" y="${p.y+2}" font-size="13" fill="#111">Poste ${pt.pole}</text>
    <text x="${p.x+14}" y="${p.y+18}" font-size="13" fill="#111">${pt.primary} / ${pt.secondary}</text>`;
  });
+ svg+=scaleBarSvg();
+ svg+=`<text x="1110" y="835" font-size="14" fill="#111">Distância total: ${formatDistance(totalDistance())}</text>`;
  svg+=`</svg>`;
  return svg;
 }
@@ -332,6 +338,108 @@ function legendHtml(){
  <div><span class="sym pr">⚡</span> PARA-RAIO</div>
  </div>`;
 }
+
+function latLngToUTMApprox(lat,lng){
+ const zone=Math.floor((lng+180)/6)+1;
+ const a=6378137;
+ const f=1/298.257223563;
+ const k0=0.9996;
+ const e=Math.sqrt(f*(2-f));
+ const latRad=lat*Math.PI/180;
+ const lngRad=lng*Math.PI/180;
+ const lon0=((zone-1)*6-180+3)*Math.PI/180;
+ const N=a/Math.sqrt(1-e*e*Math.sin(latRad)*Math.sin(latRad));
+ const T=Math.tan(latRad)*Math.tan(latRad);
+ const C=(e*e/(1-e*e))*Math.cos(latRad)*Math.cos(latRad);
+ const A=Math.cos(latRad)*(lngRad-lon0);
+ const M=a*((1-e*e/4-3*e**4/64-5*e**6/256)*latRad-(3*e*e/8+3*e**4/32+45*e**6/1024)*Math.sin(2*latRad)+(15*e**4/256+45*e**6/1024)*Math.sin(4*latRad)-(35*e**6/3072)*Math.sin(6*latRad));
+ let easting=k0*N*(A+(1-T+C)*A**3/6+(5-18*T+T*T+72*C-58*(e*e/(1-e*e)))*A**5/120)+500000;
+ let northing=k0*(M+N*Math.tan(latRad)*(A*A/2+(5-T+9*C+4*C*C)*A**4/24+(61-58*T+T*T+600*C-330*(e*e/(1-e*e)))*A**6/720));
+ if(lat<0) northing+=10000000;
+ return {zone,easting,northing,hemisphere:lat>=0?"N":"S"};
+}
+function projectBoundsMeters(){
+ if(project.length<2) return {width:0,height:0};
+ const utms=project.map(p=>latLngToUTMApprox(p.lat,p.lng));
+ return {
+  minE:Math.min(...utms.map(u=>u.easting)),
+  maxE:Math.max(...utms.map(u=>u.easting)),
+  minN:Math.min(...utms.map(u=>u.northing)),
+  maxN:Math.max(...utms.map(u=>u.northing)),
+  zone:utms[0].zone,
+  hemisphere:utms[0].hemisphere
+ };
+}
+function scaleBarSvg(){
+ const total=totalDistance();
+ let bar=20;
+ if(total>1000) bar=500; else if(total>500) bar=200; else if(total>200) bar=100; else if(total>80) bar=50; else bar=20;
+ return `<g transform="translate(90,825)">
+   <line x1="0" y1="0" x2="180" y2="0" stroke="#111" stroke-width="4"/>
+   <line x1="0" y1="-8" x2="0" y2="8" stroke="#111" stroke-width="3"/>
+   <line x1="90" y1="-8" x2="90" y2="8" stroke="#111" stroke-width="3"/>
+   <line x1="180" y1="-8" x2="180" y2="8" stroke="#111" stroke-width="3"/>
+   <text x="0" y="24" font-size="14" text-anchor="middle">0</text>
+   <text x="90" y="24" font-size="14" text-anchor="middle">${bar/2} m</text>
+   <text x="180" y="24" font-size="14" text-anchor="middle">${bar} m</text>
+   <text x="0" y="-15" font-size="14">Escala gráfica</text>
+ </g>`;
+}
+function downloadDXF(){
+ if(project.length<2){alert("Adicione pelo menos 2 pontos para exportar DXF.");return;}
+ const b=projectBoundsMeters();
+ const utms=project.map(p=>latLngToUTMApprox(p.lat,p.lng));
+ let dxf="0\nSECTION\n2\nENTITIES\n";
+ for(let i=1;i<utms.length;i++){
+   const type=project[i].lineType||"MT";
+   dxf+=`0\nLINE\n8\n${type}\n10\n${utms[i-1].easting.toFixed(3)}\n20\n${utms[i-1].northing.toFixed(3)}\n30\n0\n11\n${utms[i].easting.toFixed(3)}\n21\n${utms[i].northing.toFixed(3)}\n31\n0\n`;
+ }
+ utms.forEach((u,i)=>{
+   dxf+=`0\nCIRCLE\n8\nPOSTES\n10\n${u.easting.toFixed(3)}\n20\n${u.northing.toFixed(3)}\n30\n0\n40\n1.5\n`;
+   dxf+=`0\nTEXT\n8\nTEXTOS\n10\n${(u.easting+2).toFixed(3)}\n20\n${(u.northing+2).toFixed(3)}\n30\n0\n40\n2.5\n1\n${project[i].name} ${project[i].pole} ${project[i].primary}/${project[i].secondary}\n`;
+ });
+ dxf+="0\nENDSEC\n0\nEOF";
+ downloadFile("redecalc_projeto.dxf",dxf,"application/dxf");
+}
+function saveMemorialPDF(){
+ if(!project.length){alert("Adicione pontos ao projeto antes de gerar o memorial.");return;}
+ saveSheetData();
+ const total=materialsObject();
+ const b=projectBoundsMeters();
+ let acc=0;
+ const pointRows=project.map((p,i)=>{
+   const d=i===0?0:distanceMeters(project[i-1],p); acc+=d;
+   const u=latLngToUTMApprox(p.lat,p.lng);
+   return `<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${p.lat.toFixed(7)}</td><td>${p.lng.toFixed(7)}</td><td>${u.easting.toFixed(2)}</td><td>${u.northing.toFixed(2)}</td><td>${escapeHtml(p.pole)}</td><td>${escapeHtml(p.primary)}</td><td>${escapeHtml(p.secondary)}</td><td>${d.toFixed(1)} m</td></tr>`;
+ }).join("");
+ const materialRows=Object.keys(total).sort().map(k=>`<tr><td>${escapeHtml(k)}</td><td>${String(k).includes("(m)")?total[k].toFixed(1):total[k]}</td></tr>`).join("");
+ const memorial=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Memorial Descritivo</title>
+ <style>body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#111}h1{text-align:center;font-size:22px}h2{font-size:17px;border-bottom:2px solid #f97316;padding-bottom:5px;margin-top:24px}p{line-height:1.45}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}td,th{border:1px solid #bbb;padding:5px;text-align:left}th{background:#eee}.box{border:1px solid #bbb;border-radius:8px;padding:12px;margin:10px 0}.btn{padding:12px 18px;background:#f97316;border:0;border-radius:8px;font-weight:bold}@media print{.btn{display:none}@page{size:A4;margin:14mm}}</style></head>
+ <body><button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
+ <h1>MEMORIAL DESCRITIVO — PROJETO DE REDE MT/BT</h1>
+ <div class="box">
+ <p><strong>Município:</strong> ${escapeHtml(sheetData.city||"")}</p>
+ <p><strong>Local:</strong> ${escapeHtml(sheetData.local||"")}</p>
+ <p><strong>Obra/Assunto:</strong> ${escapeHtml(sheetData.work||"")}</p>
+ <p><strong>Alimentador:</strong> ${escapeHtml(sheetData.feeder||"")}</p>
+ <p><strong>Nota/Código:</strong> ${escapeHtml(sheetData.note||"")}</p>
+ <p><strong>Responsável técnico:</strong> ${escapeHtml(sheetData.rt||"")}</p>
+ </div>
+ <h2>1. Objetivo</h2>
+ <p>O presente memorial descreve o levantamento georreferenciado e a composição básica dos materiais para implantação ou adequação de rede de distribuição aérea em média e baixa tensão, conforme pontos coletados em campo pelo aplicativo RedeCalc Pro.</p>
+ <h2>2. Características do projeto</h2>
+ <p>Quantidade de pontos/postes: <strong>${project.length}</strong>. Distância total estimada: <strong>${formatDistance(totalDistance())}</strong>. Sistema de referência aproximado: UTM zona <strong>${b.zone||""}${b.hemisphere||""}</strong>.</p>
+ <h2>3. Coordenadas e vãos</h2>
+ <table><thead><tr><th>#</th><th>Ponto</th><th>Lat.</th><th>Long.</th><th>UTM E</th><th>UTM N</th><th>Poste</th><th>MT</th><th>BT</th><th>Vão</th></tr></thead><tbody>${pointRows}</tbody></table>
+ <h2>4. Lista consolidada de materiais</h2>
+ <table><thead><tr><th>Material</th><th>Quantidade</th></tr></thead><tbody>${materialRows}</tbody></table>
+ <h2>5. Observações técnicas</h2>
+ <p>As distâncias são calculadas pelas coordenadas GPS informadas pelo dispositivo. Para execução da obra, deve-se conferir em campo os afastamentos, vãos, esforços mecânicos, engastamento, aterramento, bitolas, proteções e demais critérios normativos exigidos pela concessionária e legislação aplicável.</p>
+ <p><strong>Nota:</strong> Este documento é um apoio operacional e não substitui projeto executivo assinado por profissional habilitado.</p>
+ </body></html>`;
+ const win=window.open("","_blank"); if(!win){alert("Permita pop-ups para gerar o memorial.");return;}
+ win.document.open();win.document.write(memorial);win.document.close();setTimeout(()=>win.print(),700);
+}
 function saveSheetPDF(){
  if(!project.length){alert("Adicione pontos ao projeto antes de gerar a prancha.");return;}
  saveSheetData();
@@ -339,7 +447,8 @@ function saveSheetPDF(){
  let acc=0;
  const coordRows=project.map((p,i)=>{
    const d=i===0?0:distanceMeters(project[i-1],p); acc+=d;
-   return `<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${p.lat.toFixed(7)}</td><td>${p.lng.toFixed(7)}</td><td>${escapeHtml(p.pole)}</td><td>${escapeHtml(p.primary)}</td><td>${escapeHtml(p.secondary)}</td><td>${escapeHtml(p.lineType||"MT")}</td><td>${escapeHtml(p.mtCable||"")}</td><td>${d.toFixed(1)} m</td></tr>`;
+   const u=latLngToUTMApprox(p.lat,p.lng);
+   return `<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${p.lat.toFixed(6)}</td><td>${p.lng.toFixed(6)}</td><td>${u.easting.toFixed(0)}</td><td>${u.northing.toFixed(0)}</td><td>${escapeHtml(p.pole)}</td><td>${escapeHtml(p.primary)}</td><td>${escapeHtml(p.secondary)}</td><td>${escapeHtml(p.lineType||"MT")}</td><td>${escapeHtml(p.mtCable||"")}</td><td>${d.toFixed(1)} m</td></tr>`;
  }).join("");
  const materialRows=Object.keys(total).sort().map(k=>`<tr><td>${escapeHtml(k)}</td><td>${String(k).includes("(m)")?total[k].toFixed(1):total[k]}</td></tr>`).join("");
  const sheet=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Prancha RedeCalc Pro</title>
@@ -363,7 +472,7 @@ function saveSheetPDF(){
  <div class="map">${sheetMapSvg()}</div>
  <div class="bottom">
    <div class="cell">${legendHtml()}<hr><div class="small">Distância total: <strong>${formatDistance(totalDistance())}</strong></div></div>
-   <div class="cell"><h3>COORDENADAS / PONTOS</h3><table><thead><tr><th>#</th><th>Ponto</th><th>Lat.</th><th>Long.</th><th>Poste</th><th>MT</th><th>BT</th><th>Rede</th><th>Cabo</th><th>Vão</th></tr></thead><tbody>${coordRows}</tbody></table></div>
+   <div class="cell"><h3>COORDENADAS / PONTOS</h3><table><thead><tr><th>#</th><th>Ponto</th><th>Lat.</th><th>Long.</th><th>UTM E</th><th>UTM N</th><th>Poste</th><th>MT</th><th>BT</th><th>Rede</th><th>Cabo</th><th>Vão</th></tr></thead><tbody>${coordRows}</tbody></table></div>
    <div class="cell"><h3>MATERIAIS</h3><table><thead><tr><th>Material</th><th>Qtd.</th></tr></thead><tbody>${materialRows}</tbody></table></div>
    <div class="cell titleblock">
      <h1>EQUATORIAL / EQLT</h1>

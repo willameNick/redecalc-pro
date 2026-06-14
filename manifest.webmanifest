@@ -1,7 +1,7 @@
 {
-  "name": "RedeCalc Pro Prancha",
+  "name": "RedeCalc Pro Profissional",
   "short_name": "RedeCalc GPS",
-  "description": "Projeto GPS com prancha planimétrica estilo Equatorial, legenda, carimbo e PDF.",
+  "description": "Prancha, memorial, escala gráfica, UTM aproximado e exportação DXF.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b1220",
