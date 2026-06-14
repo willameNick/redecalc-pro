@@ -1,15 +1,19 @@
-# RedeCalc Pro MT/BT
+# RedeCalc Pro Prancha
 
-Atualizado com base na NT.00006.EQTL Rev.04/2025.
+## Atualização
+- Gera prancha planimétrica em formato semelhante ao modelo enviado.
+- Moldura técnica, legenda e carimbo.
+- Mapa simplificado do traçado por GPS.
+- Rede MT tracejada.
+- Rede BT contínua.
+- Distância dos vãos.
+- Tabela de coordenadas.
+- Lista consolidada de materiais.
+- Botão "Prancha PDF".
 
-## Cadastrado
-- MT: N1, N2, N3, N4, N3-N3
-- BT: S1I, S3I, S4I
-- CE1 e CE1a conforme cadastro inicial informado pelo usuário
-
-## Recursos
-- Lista consolidada
-- Imagens ilustrativas em SVG
-- Impressão/exportação em PDF
-- Funcionamento offline/PWA
-- Base para Android com Capacitor
+## Uso
+1. Publicar no GitHub Pages para liberar GPS por HTTPS.
+2. Capturar pontos em campo.
+3. Informar dados da prancha.
+4. Tocar em "Prancha PDF".
+5. Escolher "Salvar como PDF".

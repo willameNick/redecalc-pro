@@ -3,149 +3,483 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RedeCalc Pro - MT/BT</title>
+<title>RedeCalc Pro GPS</title>
 <meta name="theme-color" content="#f97316">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
-:root{--bg:#0b1220;--card:#121c2e;--card2:#1b2940;--text:#f8fafc;--muted:#94a3b8;--accent:#f97316;--green:#22c55e;--line:#26364f;--warn:#f59e0b}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1e3a5f,#0b1220 45%);color:var(--text);max-width:430px;margin:auto;min-height:100vh}
-.app{padding:18px 16px 90px}.screen{display:none}.screen.active{display:block}
-h1,h2,h3{margin:0}h1{font-size:25px}h2{font-size:21px;margin-bottom:12px}h3{font-size:16px}
-p{line-height:1.35}.muted{color:var(--muted);font-size:13px}.tiny{color:var(--muted);font-size:12px}
+:root{--bg:#0b1220;--card:#121c2e;--card2:#1b2940;--text:#f8fafc;--muted:#94a3b8;--accent:#f97316;--green:#22c55e;--line:#26364f;--red:#ef4444;--blue:#38bdf8}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1e3a5f,#0b1220 45%);color:var(--text);max-width:430px;margin:auto;min-height:100vh}
+.app{padding:18px 16px 96px}.screen{display:none}.screen.active{display:block}
+h1,h2,h3{margin:0}h1{font-size:25px}h2{font-size:21px;margin-bottom:12px}h3{font-size:16px}p{line-height:1.35}.muted{color:var(--muted);font-size:13px}.tiny{color:var(--muted);font-size:12px}
 .card{background:linear-gradient(180deg,var(--card),#0d1626);border:1px solid var(--line);border-radius:22px;padding:15px;margin-bottom:13px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}.badge{padding:5px 9px;border-radius:999px;background:#122d1d;color:#86efac;border:1px solid #14532d;font-size:12px}
-.btn{width:100%;border:0;border-radius:15px;padding:14px;background:var(--accent);color:#111827;font-weight:900;font-size:15px;cursor:pointer}.btn.secondary{background:var(--card2);border:1px solid var(--line);color:var(--text)}.btn.small{width:auto;padding:8px 11px;font-size:12px}
-label{display:block;margin:11px 0 6px;color:#cbd5e1;font-weight:bold;font-size:14px}select,input{width:100%;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:15px;padding:13px;font-size:16px}
+.btn{width:100%;border:0;border-radius:15px;padding:14px;background:var(--accent);color:#111827;font-weight:900;font-size:15px;cursor:pointer}.btn.secondary{background:var(--card2);border:1px solid var(--line);color:var(--text)}.btn.danger{background:var(--red);color:white}.btn.small{width:auto;padding:8px 11px;font-size:12px}
+label{display:block;margin:11px 0 6px;color:#cbd5e1;font-weight:bold;font-size:14px}select,input,textarea{width:100%;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:15px;padding:13px;font-size:16px}
 .item{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}.item:last-child{border-bottom:0}.item strong{text-align:right}
-.warn{background:#3a2712;border:1px solid #92400e;color:#fde68a;border-radius:15px;padding:12px;margin-bottom:10px}.ok{background:#10281b;border:1px solid #14532d;color:#bbf7d0;border-radius:15px;padding:12px;margin-bottom:10px}
-.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0c1525;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 4px 10px;z-index:10}
-.tab{background:transparent;color:var(--muted);border:0;font-size:11px;padding:4px;cursor:pointer}.tab span{display:block;font-size:20px}.tab.active{color:var(--accent)}
-.diagram{background:#e8f3ff;border-radius:18px;padding:10px;margin:10px 0;color:#111}.diagram svg{width:100%;height:auto;display:block}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:999px;padding:8px 11px;cursor:pointer}.chip.active{background:var(--accent);color:#111;font-weight:bold}
-.poleArt{height:210px;position:relative;border-radius:24px;background:linear-gradient(180deg,#60a5fa,#dbeafe 58%,#14532d);overflow:hidden;margin-bottom:14px}.pole{position:absolute;left:198px;top:42px;width:18px;height:155px;background:linear-gradient(90deg,#6b7280,#e5e7eb,#6b7280);border-radius:8px}.cross{position:absolute;left:110px;top:70px;width:190px;height:15px;background:#7c2d12;border-radius:8px;box-shadow:0 12px 0 #7c2d12}.wire{position:absolute;left:0;right:0;height:3px;background:#111827}.w1{top:67px}.w2{top:100px}.w3{top:132px}.ins{position:absolute;width:16px;height:20px;background:#e0f2fe;border:2px solid #0369a1;border-radius:50%;top:59px}.i1{left:132px}.i2{left:198px}.i3{left:264px}
-@media print{body{background:#fff;color:#000;max-width:none}.tabs,.btn,.noPrint{display:none}.card{box-shadow:none;border:1px solid #ccc;background:#fff;color:#000}.muted,.tiny{color:#333}.app{padding:10px}.screen{display:block}.screen:not(#results){display:none!important}}
+.ok{background:#10281b;border:1px solid #14532d;color:#bbf7d0;border-radius:15px;padding:12px;margin-bottom:10px}.warn{background:#3a2712;border:1px solid #92400e;color:#fde68a;border-radius:15px;padding:12px;margin-bottom:10px}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0c1525;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 10px;z-index:10}
+.tab{background:transparent;color:var(--muted);border:0;font-size:10px;padding:4px;cursor:pointer}.tab span{display:block;font-size:20px}.tab.active{color:var(--accent)}
+.map{height:360px;background:#e8f3ff;border-radius:20px;overflow:hidden;position:relative;border:1px solid #94a3b8}.map svg{width:100%;height:100%;display:block}
+.pointList{max-height:250px;overflow:auto}.queueItem{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.poleArt{height:190px;position:relative;border-radius:24px;background:linear-gradient(180deg,#60a5fa,#dbeafe 58%,#14532d);overflow:hidden;margin-bottom:14px}.pole{position:absolute;left:198px;top:42px;width:18px;height:135px;background:linear-gradient(90deg,#6b7280,#e5e7eb,#6b7280);border-radius:8px}.cross{position:absolute;left:110px;top:70px;width:190px;height:15px;background:#7c2d12;border-radius:8px;box-shadow:0 12px 0 #7c2d12}.wire{position:absolute;left:0;right:0;height:3px;background:#111827}.w1{top:67px}.w2{top:100px}.w3{top:132px}.ins{position:absolute;width:16px;height:20px;background:#e0f2fe;border:2px solid #0369a1;border-radius:50%;top:59px}.i1{left:132px}.i2{left:198px}.i3{left:264px}
+@media print{body{background:#fff;color:#000;max-width:none}.tabs,.btn,.noPrint{display:none}.card{box-shadow:none;border:1px solid #ccc;background:#fff;color:#000}.muted,.tiny{color:#333}.app{padding:10px}.screen{display:block}.screen:not(#project){display:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
 <section id="home" class="screen active">
-<div class="row" style="margin-bottom:14px"><div><div class="muted">Lista de material</div><h1>RedeCalc Pro</h1></div><span class="badge">NT.00006.EQTL</span></div>
+<div class="row" style="margin-bottom:14px"><div><div class="muted">Projeto georreferenciado</div><h1>RedeCalc Pro GPS</h1></div><span class="badge">GPS</span></div>
 <div class="poleArt"><div class="wire w1"></div><div class="wire w2"></div><div class="wire w3"></div><div class="pole"></div><div class="cross"></div><div class="ins i1"></div><div class="ins i2"></div><div class="ins i3"></div></div>
-<div class="card"><h2>Estruturas de média e baixa tensão</h2><p class="muted">App atualizado com base na norma Equatorial NT.00006.EQTL, revisão 04/2025. Gera lista consolidada e mostra desenho ilustrativo da montagem.</p><button class="btn" onclick="go('select')">CRIAR LISTA DE MATERIAL</button></div>
-<div class="card"><h3>Estruturas cadastradas</h3><div class="item"><span>Média tensão</span><strong>N1, N2, N3, N4, N3-N3, CE1, CE1a</strong></div><div class="item"><span>Baixa tensão</span><strong>S1I, S3I, S4I</strong></div><div class="item"><span>Postes</span><strong>9-300 a 13-1500</strong></div></div>
+<div class="card"><h2>Desenhe o projeto em campo</h2><p class="muted">Use o GPS do celular para capturar cada poste, adicionar a estrutura instalada e desenhar o traçado da rede automaticamente.</p><button class="btn" onclick="go('project')">ABRIR PROJETO GPS</button></div>
+<div class="card"><h3>Recursos</h3><div class="item"><span>GPS em tempo real</span><strong>latitude/longitude</strong></div><div class="item"><span>Adicionar estrutura</span><strong>poste + MT + BT</strong></div><div class="item"><span>Desenho do projeto</span><strong>linha entre pontos</strong></div><div class="item"><span>Exportar dados</span><strong>CSV/JSON</strong></div></div>
 </section>
 
-<section id="select" class="screen">
-<h2>Selecionar estrutura</h2>
+<section id="project" class="screen">
+<div class="row"><h2>Projeto em campo</h2><button class="btn small secondary" onclick="saveSheetPDF()">Prancha PDF</button></div>
+<div class="card noPrint">
+<h3>Dados da prancha</h3>
+<label>Município</label><input id="cityInput" placeholder="Ex.: Nazária">
+<label>Obra / Assunto</label><input id="workInput" placeholder="Ex.: Ampliação de potência / extensão de rede">
+<label>Local</label><input id="localInput" placeholder="Ex.: Zona urbana / rural / comunidade">
+<label>Alimentador</label><input id="feederInput" placeholder="Ex.: 01C2 ETA-ESPERANTINA">
+<label>Nota / Código da obra</label><input id="noteInput" placeholder="Ex.: 440216019">
+<label>Responsável técnico</label><input id="rtInput" placeholder="Nome do responsável técnico">
+<label>Escala</label><input id="scaleInput" value="1/500">
+<button class="btn" onclick="saveSheetData()">Salvar dados da prancha</button>
+</div>
+<div class="card noPrint">
+<div class="row"><button class="btn small" onclick="startGPS()">Ligar GPS</button><button class="btn small secondary" onclick="stopGPS()">Parar</button><button class="btn small danger" onclick="clearProject()">Limpar</button></div>
+<p class="tiny" id="gpsStatus">GPS parado. Toque em “Ligar GPS”.</p>
+<div class="item"><span>Latitude</span><strong id="latOut">--</strong></div>
+<div class="item"><span>Longitude</span><strong id="lngOut">--</strong></div>
+<div class="item"><span>Precisão</span><strong id="accOut">--</strong></div>
+</div>
+
+<div class="card noPrint">
+<h3>Adicionar ponto/estrutura</h3>
+<label>Nome do ponto</label><input id="pointName" placeholder="Ex.: P1, P2, Derivação, Transformador">
+<label>Poste</label><select id="poleSelect"></select>
+<label>Estrutura primária</label><select id="primarySelect"></select>
+<label>Cabo da rede MT</label><select id="mtCableSelect"></select>
+<label>Tipo de trecho até este ponto</label><select id="lineTypeSelect"><option value="MT">Rede MT - linha vermelha tracejada</option><option value="BT">Rede BT - linha vermelha contínua</option></select>
+<label>Estrutura secundária</label><select id="secondarySelect"></select>
+<label>Observação</label><textarea id="obsInput" rows="2" placeholder="Ex.: fim de linha, derivação, estai, transformador..."></textarea>
+<br><br><button class="btn" onclick="addCurrentPoint()">Adicionar estrutura no local atual</button>
+</div>
+
 <div class="card">
-<label>Qual poste?</label><select id="poleSelect"></select>
-<label>Estrutura primária / média tensão</label><select id="primarySelect"></select>
-<label>Estrutura secundária / baixa tensão</label><select id="secondarySelect"></select>
-<label>Quantidade de estruturas iguais</label><input id="qtySelect" type="number" value="1" min="1">
-<br><br><button class="btn" onclick="generateList()">Gerar lista</button><br><br><button class="btn secondary" onclick="go('home')">Voltar</button>
+<h3>Distâncias do projeto</h3>
+<div class="item"><span>Distância total</span><strong id="totalDistanceOut">0 m</strong></div>
+<div id="distanceList"></div>
+</div>
+
+<div class="card">
+<h3>Mapa/desenho do projeto</h3>
+<div class="map"><svg id="projectSvg" viewBox="0 0 400 360"></svg></div>
+<p class="tiny">Linha vermelha tracejada = rede MT. Linha vermelha contínua = rede BT.</p>
+<p class="tiny">O desenho é uma planta simplificada baseada nas coordenadas capturadas. Para mapa real com ruas/satélite, é necessário integrar API de mapas.</p>
+</div>
+
+<div class="card">
+<div class="row"><h3>Pontos do projeto</h3><span class="badge" id="pointCount">0 pontos</span></div>
+<div id="pointsList" class="pointList"></div>
+</div>
+
+<div class="card noPrint">
+<h3>Exportar</h3>
+<button class="btn" onclick="saveSheetPDF()">Salvar prancha em PDF</button>
+<br><br>
+<button class="btn secondary" onclick="saveProjectPDF()">Salvar relatório simples em PDF</button>
+<br><br>
+<div class="row"><button class="btn small secondary" onclick="downloadCSV()">CSV</button><button class="btn small secondary" onclick="downloadJSON()">JSON</button><button class="btn small secondary" onclick="copyLink()">Copiar coords</button></div>
 </div>
 </section>
 
-<section id="results" class="screen">
-<div class="row"><h2>Lista gerada</h2><button class="btn small secondary" onclick="window.print()">PDF</button></div>
-<div class="card"><h3>Resumo</h3><div class="item"><span>Poste</span><strong id="outPole"></strong></div><div class="item"><span>Primária</span><strong id="outPrimary"></strong></div><div class="item"><span>Secundária</span><strong id="outSecondary"></strong></div><div class="item"><span>Quantidade</span><strong id="outQty"></strong></div></div>
-<div id="warningBox"></div>
-<div class="card"><h3>Imagem da estrutura</h3><div id="diagramArea"></div></div>
-<div class="card"><h3>Materiais consolidados</h3><div id="materialList"></div></div>
-<div class="card"><h3>Materiais por estrutura</h3><div id="structureDetails"></div></div>
-<button class="btn" onclick="go('select')">Editar seleção</button><br><br><button class="btn secondary" onclick="go('home')">Nova lista</button>
-</section>
-
-<section id="database" class="screen">
-<h2>Banco de estruturas</h2>
-<div class="card noPrint"><div class="chips" id="chips"></div></div>
-<div id="dbContent"></div>
+<section id="materials" class="screen">
+<h2>Materiais do projeto</h2>
+<div class="card"><h3>Lista consolidada dos pontos GPS</h3><div id="materialList"></div></div>
 </section>
 
 <section id="about" class="screen">
 <h2>Sobre</h2>
-<div class="card"><h3>Base normativa</h3><p class="muted">A norma informa tensão primária de 13,8 kV, tensão secundária 380/220 V ou 220/127 V, poste de concreto duplo T e cruzetas de fibra de vidro tipo L de 1.700 mm e tipo T de 1.900 mm.</p><div class="warn">Use como lista de apoio. A execução deve seguir projeto aprovado, padrão da concessionária, NR-10 e responsável técnico.</div></div>
+<div class="card"><h3>GPS e precisão</h3><p class="muted">A precisão depende do celular, céu aberto e sinal GPS. Em campo, aguarde a precisão melhorar antes de salvar o ponto.</p><div class="warn">A função GPS precisa de HTTPS. No GitHub Pages funciona. Abrindo o arquivo direto no celular, o navegador pode bloquear a localização.</div></div>
+</section>
+
+<section id="config" class="screen">
+<h2>Configurações</h2>
+<div class="card"><h3>Banco básico de estruturas</h3><p class="muted">Versão com estruturas principais para projeto georreferenciado.</p><div id="dbList"></div></div>
 </section>
 </div>
 
 <nav class="tabs">
 <button class="tab active" onclick="go('home',this)"><span>🏠</span>Início</button>
-<button class="tab" onclick="go('select',this)"><span>🧾</span>Lista</button>
-<button class="tab" onclick="go('database',this)"><span>📦</span>Banco</button>
+<button class="tab" onclick="go('project',this)"><span>📍</span>Projeto</button>
+<button class="tab" onclick="go('materials',this)"><span>📦</span>Material</button>
+<button class="tab" onclick="go('config',this)"><span>⚙️</span>Banco</button>
 <button class="tab" onclick="go('about',this)"><span>ℹ️</span>Sobre</button>
 </nav>
 
 <script>
 const poles=["9-300","9-600","10-300","11-300","11-600","11-1000","11-1500","12-600","12-1000","12-1500","13-1500"];
-
+const mtCables=["2 AWG","1/0 AWG","4/0 AWG","336 MCM"];
 const primaryStructures={
-"Sem primária":{ref:"",type:"none",items:{}},
-"N1":{ref:"Desenho 67 / Quadro 50",type:"N1",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":1,"Isolador pilar 15 kV":3,"Pino auto travante":3,"Laço pré-formado de topo":3,"Arruela quadrada 38x38x3 mm Ø18 mm":4}},
-"N2":{ref:"Desenho 68 / Quadro 52",type:"N2",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Isolador pilar 15 kV":6,"Pino auto travante":6,"Laço pré-formado duplo lateral":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
-"N3":{ref:"Desenho 69 / Quadro 54",type:"N3",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Alça pré-formada distribuição":3,"Isolador ancoragem polimérico 15 kV":3,"Manilha sapatilha para alça pré-formada":3,"Gancho olhal para 5.000 daN":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
-"N4":{ref:"Desenho 70 / Quadro 56",type:"N4",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":2,"Alça pré-formada distribuição":6,"Isolador ancoragem polimérico 15 kV":6,"Isolador pilar 15 kV":3,"Pino auto travante":3,"Laço pré-formado de topo":3,"Conector cunha":3,"Manilha sapatilha para alça pré-formada":6,"Gancho olhal para 5.000 daN":6,"Porca olhal rosca M16x2":3,"Arruela quadrada 38x38x3 mm Ø18 mm":12,"Porca quadrada rosca M16x2":4}},
-"N3-N3":{ref:"Desenho 79 / Quadro 71",type:"N3N3",items:{"Poste de concreto seção DT":1,"Cruzeta de fibra de vidro tipo T 1.900 mm":4,"Alça pré-formada distribuição":6,"Isolador ancoragem polimérico 15 kV":6,"Isolador pilar 15 kV":2,"Pino auto travante":2,"Laço pré-formado de topo":2,"Conector cunha":3,"Manilha sapatilha para alça pré-formada":6,"Gancho olhal para 5.000 daN":6,"Arruela quadrada 38x38x3 mm Ø18 mm":24,"Porca quadrada rosca M16x2":8}},
-"CE1":{ref:"Cadastro inicial informado pelo usuário",type:"CE1",items:{"Braço L":1,"Parafuso 16x250 mm":2}},
-"CE1a":{ref:"Cadastro inicial informado pelo usuário",type:"CE1a",items:{"Braço L":1,"Parafuso 16x250 mm":3,"Estribo":1,"Espaçador losangular":1,"Braço antibalanço":1}},
-"CE2":{ref:"Pendente de cadastro",type:"CE",items:{}},
-"CE3":{ref:"Pendente de cadastro",type:"CE",items:{}},
-"CE4":{ref:"Pendente de cadastro",type:"CE",items:{}}
+"Sem primária":{},
+"N1":{"Cruzeta T":1,"Isolador pilar 15 kV":3,"Pino auto travante":3,"Arruela":4},
+"N2":{"Cruzeta T":2,"Isolador pilar 15 kV":6,"Pino auto travante":6,"Arruela":12,"Porca M16":4},
+"N3":{"Cruzeta T":2,"Isolador bastão completo":3,"Alça pré-formada":3,"Manilha":3,"Gancho olhal":3,"Arruela":12},
+"N4":{"Cruzeta T":2,"Isolador bastão completo":6,"Alça pré-formada":6,"Manilha":6,"Gancho olhal":6,"Conector cunha":3,"Arruela":12},
+"N3-N3":{"Cruzeta T":4,"Isolador bastão completo":6,"Alça pré-formada":6,"Manilha":6,"Gancho olhal":6,"Arruela":24},
+"CE1":{"Braço L":1,"Parafuso 16x250 mm":2},
+"CE1a":{"Braço L":1,"Parafuso 16x250 mm":3,"Estribo":1,"Espaçador losangular":1,"Braço antibalanço":1},
+"CE2":{"Braço C":1,"Isolador de polímero":3,"Pino curto":3,"Anel de silicone":3,"Parafuso 16x250 mm":2,"Arruela":2},
+"CE3":{"Braço C":1,"Suporte braço C":1,"Parafuso 16x60 mm":1,"Isolador bastão":3,"Grampa de suspensão":3,"Parafuso 16x250 mm":2,"Olhal 5.000 daN":3,"Gancho":3,"Manilha":3,"Arruela":2},
+"CE4":{"Braço C":1,"Suporte braço C":1,"Parafuso 16x60 mm":1,"Isolador bastão":6,"Grampa de suspensão":3,"Parafuso 16x250 mm":2,"Olhal 5.000 daN":6,"Gancho":6,"Manilha":6,"Arruela":2}
 };
-
 const secondaryStructures={
-"Sem secundária":{ref:"",type:"none",items:{}},
-"S1I":{ref:"Desenho 29 / Quadro 1",type:"S1",items:{"Poste de concreto seção DT":1,"Armação secundária 1 estribo":1,"Isolador roldana para 750 V":1,"Laço pré-formado para isolador roldana":1,"Abraçadeira plástica":2,"Arruela quadrada 38x38x3 mm Ø18 mm":1}},
-"S3I":{ref:"Desenho 31 / Quadro 3",type:"S3",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":1,"Sapatilha aço galvanizado":1,"Abraçadeira plástica":3,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Fio de aço cobreado 16 mm²":1.6,"Haste terra aço-cobreado Ø16 x 2.400 mm":1,"Conector cunha cobre estanhado":1,"Fita de aço inoxidável":1,"Fecho fita aço inox":1}},
-"S4I":{ref:"Desenho 35/36 / Quadros 8 e 9",type:"S4",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":2,"Sapatilha para cabo aço 6,5 a 9,5 mm":2,"Abraçadeira plástica":2,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Porca olhal rosca M16x2":1,"Conector cunha alumínio":1,"Conector perfurante":3}},
-"S4I com aterramento":{ref:"Desenho 35 / Quadro 8",type:"S4",items:{"Poste de concreto seção DT":1,"Alça pré-formada para cabo multiplex":2,"Sapatilha para cabo aço 6,5 a 9,5 mm":2,"Abraçadeira plástica":6,"Arruela quadrada 38x38x3 mm Ø18 mm":2,"Porca olhal rosca M16x2":1,"Conector cunha alumínio":1,"Conector cunha cobre estanhado":1,"Fio de aço cobreado 16 mm²":1.6,"Haste terra aço-cobreado Ø16 x 2.400 mm":1,"Conector cunha para haste de aterramento":1,"Fita isolante PVC":1,"Fita auto fusão":1}}
+"Sem secundária":{},
+"S1":{"Armação simples":1,"Parafuso 16x250 mm":1,"Isolador roldana":1,"Arruela":1},
+"S3":{"Parafuso olhal 16x250 mm":1,"Arruela":2},
+"S4":{"Parafuso olhal 16x250 mm":1,"Arruela":2,"Porca olhal":1}
 };
 
-function svgStructure(kind, title){
- const mtWires=`<line x1="10" y1="58" x2="390" y2="58" stroke="#111" stroke-width="3"/><line x1="10" y1="98" x2="390" y2="98" stroke="#111" stroke-width="3"/><line x1="10" y1="138" x2="390" y2="138" stroke="#111" stroke-width="3"/>`;
- const pole=`<rect x="192" y="35" width="18" height="250" rx="8" fill="#777"/><rect x="198" y="35" width="6" height="250" fill="#ddd"/>`;
- const cross1=`<rect x="88" y="82" width="224" height="14" rx="6" fill="#8b4513"/>`;
- const cross2=`<rect x="88" y="128" width="224" height="14" rx="6" fill="#8b4513"/>`;
- const insTop=`<circle cx="120" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="200" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="280" cy="77" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/>`;
- const insMid=`<circle cx="120" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="200" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><circle cx="280" cy="124" r="10" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/>`;
- const anchors=`<circle cx="94" cy="120" r="9" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><circle cx="306" cy="120" r="9" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><path d="M94 120 C50 145 45 170 30 200" stroke="#111" stroke-width="3" fill="none"/><path d="M306 120 C350 145 355 170 370 200" stroke="#111" stroke-width="3" fill="none"/>`;
- const bt=`<path d="M25 192 C110 170 290 215 375 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="200" cy="190" r="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="3"/>`;
- let body="";
- if(kind==="N1") body=mtWires+pole+cross1+insTop;
- else if(kind==="N2") body=mtWires+pole+cross1+cross2+insTop+insMid;
- else if(kind==="N3") body=mtWires+pole+cross1+cross2+anchors;
- else if(kind==="N4") body=mtWires+pole+cross1+cross2+anchors+insTop;
- else if(kind==="N3N3") body=mtWires+pole+cross1+cross2+anchors+`<path d="M94 78 C50 55 45 35 30 20" stroke="#111" stroke-width="3" fill="none"/><path d="M306 78 C350 55 355 35 370 20" stroke="#111" stroke-width="3" fill="none"/>`;
- else if(kind==="S1") body=pole+bt+`<text x="218" y="195" fill="#111" font-size="12">roldana</text>`;
- else if(kind==="S3") body=pole+`<path d="M30 190 C90 175 140 180 196 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="200" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><text x="218" y="195" fill="#111" font-size="12">fim de linha</text>`;
- else if(kind==="S4") body=pole+`<path d="M30 190 C95 170 150 180 198 190" stroke="#111" stroke-width="8" fill="none"/><path d="M202 190 C250 200 305 210 375 190" stroke="#111" stroke-width="8" fill="none"/><circle cx="185" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><circle cx="215" cy="190" r="10" fill="#fed7aa" stroke="#9a3412" stroke-width="3"/><text x="230" y="195" fill="#111" font-size="12">amarração</text>`;
- else if(kind==="CE1"||kind==="CE1a"||kind==="CE") body=pole+`<line x1="200" y1="110" x2="315" y2="80" stroke="#8b4513" stroke-width="15"/><line x1="10" y1="80" x2="390" y2="80" stroke="#111" stroke-width="3"/><circle cx="315" cy="80" r="11" fill="#dbeafe" stroke="#0369a1" stroke-width="2"/><text x="225" y="125" fill="#111" font-size="12">braço L</text>`;
- else body=pole;
- return `<div class="diagram"><svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" rx="16" fill="#e8f3ff"/><text x="18" y="26" font-size="18" font-weight="bold" fill="#111">${title}</text>${body}<rect x="0" y="274" width="400" height="26" fill="#14532d"/></svg></div>`;
-}
+let currentPos=null, watchId=null;
+let project=JSON.parse(localStorage.getItem("redecalc_gps_project")||"[]");
+let sheetData=JSON.parse(localStorage.getItem("redecalc_sheet_data")||"{}");
 
-function go(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));if(btn)btn.classList.add("active");renderDB();}
-function fillSelects(){poleSelect.innerHTML=poles.map(p=>`<option>${p}</option>`).join("");primarySelect.innerHTML=Object.keys(primaryStructures).map(p=>`<option>${p}</option>`).join("");secondarySelect.innerHTML=Object.keys(secondaryStructures).map(s=>`<option>${s}</option>`).join("");}
-function addItems(total,items,qty){Object.keys(items).forEach(n=>{total[n]=(total[n]||0)+items[n]*qty;});}
-function renderItems(items,qty=1){let keys=Object.keys(items);if(!keys.length)return `<p class="muted">Materiais ainda não cadastrados.</p>`;return keys.map(k=>`<div class="item"><span>${k}</span><strong>${items[k]*qty}</strong></div>`).join("");}
-function generateList(){
- const pole=poleSelect.value, primary=primarySelect.value, secondary=secondarySelect.value, qty=parseInt(qtySelect.value||1);
- const p=primaryStructures[primary], s=secondaryStructures[secondary], total={}, pending=[];
- addItems(total,{["Poste "+pole]:1},qty); addItems(total,p.items,qty); addItems(total,s.items,qty);
- if(!Object.keys(p.items).length && primary!=="Sem primária") pending.push(primary);
- if(!Object.keys(s.items).length && secondary!=="Sem secundária") pending.push(secondary);
- outPole.textContent=pole; outPrimary.textContent=primary; outSecondary.textContent=secondary; outQty.textContent=qty;
- warningBox.innerHTML=pending.length?`<div class="warn">Estrutura(s) sem materiais cadastrados: <strong>${pending.join(", ")}</strong>. Lista parcial.</div>`:`<div class="ok">Lista gerada com estruturas cadastradas.</div>`;
- diagramArea.innerHTML=svgStructure(p.type,primary)+svgStructure(s.type,secondary);
- materialList.innerHTML=Object.keys(total).map(n=>`<div class="item"><span>${n}</span><strong>${total[n]}</strong></div>`).join("");
- structureDetails.innerHTML=`<h3>Poste ${pole}</h3><div class="item"><span>Poste</span><strong>${qty}</strong></div><br><h3>${primary}</h3><p class="tiny">${p.ref}</p>${renderItems(p.items,qty)}<br><h3>${secondary}</h3><p class="tiny">${s.ref}</p>${renderItems(s.items,qty)}`;
- go("results");
+function go(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));if(btn)btn.classList.add("active");renderAll();}
+function fillSelects(){
+ poleSelect.innerHTML=poles.map(p=>`<option>${p}</option>`).join("");
+ primarySelect.innerHTML=Object.keys(primaryStructures).map(p=>`<option>${p}</option>`).join("");
+ secondarySelect.innerHTML=Object.keys(secondaryStructures).map(s=>`<option>${s}</option>`).join("");
+ mtCableSelect.innerHTML=mtCables.map(c=>`<option>${c}</option>`).join("");
 }
-function renderDB(group="mt"){
- chips.innerHTML=`<button class="chip ${group==="mt"?"active":""}" onclick="renderDB('mt')">Média tensão</button><button class="chip ${group==="bt"?"active":""}" onclick="renderDB('bt')">Baixa tensão</button>`;
- const data=group==="mt"?primaryStructures:secondaryStructures;
- dbContent.innerHTML=Object.keys(data).map(k=>`<div class="card"><h3>${k}</h3><p class="tiny">${data[k].ref||"—"}</p>${svgStructure(data[k].type,k)}${renderItems(data[k].items)}</div>`).join("");
+function save(){localStorage.setItem("redecalc_gps_project",JSON.stringify(project));}
+function startGPS(){
+ if(!navigator.geolocation){gpsStatus.textContent="Este aparelho/navegador não suporta GPS.";return;}
+ gpsStatus.textContent="Buscando localização...";
+ watchId=navigator.geolocation.watchPosition(pos=>{
+  currentPos={lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,time:new Date().toISOString()};
+  latOut.textContent=currentPos.lat.toFixed(7);lngOut.textContent=currentPos.lng.toFixed(7);accOut.textContent=currentPos.acc.toFixed(1)+" m";
+  gpsStatus.textContent="GPS ativo em tempo real.";
+ },err=>{gpsStatus.textContent="Erro no GPS: "+err.message;},{enableHighAccuracy:true,maximumAge:1000,timeout:15000});
 }
-fillSelects();renderDB();
+function stopGPS(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}gpsStatus.textContent="GPS parado.";}
+function addCurrentPoint(){
+ if(!currentPos){alert("Ligue o GPS e aguarde capturar a localização.");return;}
+ const name=pointName.value.trim()||"P"+(project.length+1);
+ project.push({name,lat:currentPos.lat,lng:currentPos.lng,acc:currentPos.acc,time:currentPos.time,pole:poleSelect.value,primary:primarySelect.value,mtCable:mtCableSelect.value,lineType:lineTypeSelect.value,secondary:secondarySelect.value,obs:obsInput.value.trim()});
+ pointName.value="";obsInput.value="";save();renderAll();
+}
+function removePoint(i){project.splice(i,1);save();renderAll();}
+function clearProject(){if(confirm("Apagar todos os pontos do projeto?")){project=[];save();renderAll();}}
+function bounds(){if(!project.length)return null;let minLat=Math.min(...project.map(p=>p.lat)),maxLat=Math.max(...project.map(p=>p.lat)),minLng=Math.min(...project.map(p=>p.lng)),maxLng=Math.max(...project.map(p=>p.lng));if(minLat===maxLat){minLat-=0.0001;maxLat+=0.0001}if(minLng===maxLng){minLng-=0.0001;maxLng+=0.0001}return{minLat,maxLat,minLng,maxLng};}
+function xy(p,b){const pad=35;const x=pad+(p.lng-b.minLng)/(b.maxLng-b.minLng)*(400-pad*2);const y=325-(p.lat-b.minLat)/(b.maxLat-b.minLat)*(300);return{x,y};}
+function renderMap(){
+ const b=bounds();let svg='<rect width="400" height="360" fill="#e8f3ff"/><text x="12" y="22" font-size="13" fill="#334155">Planta simplificada por GPS</text><line x1="12" y1="40" x2="70" y2="40" stroke="#dc2626" stroke-width="4" stroke-dasharray="9 7"/><text x="76" y="44" font-size="10" fill="#111">MT</text><line x1="120" y1="40" x2="178" y2="40" stroke="#dc2626" stroke-width="4"/><text x="184" y="44" font-size="10" fill="#111">BT</text>';
+ if(project.length&&b){
+   let pts=project.map(p=>xy(p,b));
+   if(pts.length>1){
+     for(let i=1;i<pts.length;i++){
+       const a=pts[i-1], bpt=pts[i];
+       const type=project[i].lineType || "MT";
+       const dash=type==="MT" ? 'stroke-dasharray="9 7"' : "";
+       svg+=`<line x1="${a.x}" y1="${a.y}" x2="${bpt.x}" y2="${bpt.y}" stroke="#dc2626" stroke-width="4" ${dash}/>`;
+       const midX=(a.x+bpt.x)/2;
+       const midY=(a.y+bpt.y)/2;
+       const d=distanceMeters(project[i-1],project[i]);
+       const label=type==="MT" ? "MT "+(project[i].mtCable||"") : "BT";
+       svg+=`<rect x="${midX-43}" y="${midY-22}" width="86" height="30" rx="8" fill="#fff" stroke="#dc2626"/><text x="${midX}" y="${midY-10}" font-size="10" text-anchor="middle" fill="#111">${label}</text><text x="${midX}" y="${midY+2}" font-size="10" text-anchor="middle" fill="#111">${formatDistance(d)}</text>`;
+     }
+   }
+   pts.forEach((p,i)=>{svg+=`<circle cx="${p.x}" cy="${p.y}" r="10" fill="#0b1220" stroke="#f97316" stroke-width="3"/><text x="${p.x+12}" y="${p.y+4}" font-size="12" font-weight="bold" fill="#111">${project[i].name}</text>`});
+ }
+ else svg+='<text x="60" y="180" font-size="15" fill="#64748b">Adicione pontos com GPS para desenhar a rede</text>';
+ svg+='<rect y="335" width="400" height="25" fill="#14532d"/>';
+ projectSvg.innerHTML=svg;
+}
+function distanceMeters(a,b){
+ const R=6371000;
+ const lat1=a.lat*Math.PI/180, lat2=b.lat*Math.PI/180;
+ const dLat=(b.lat-a.lat)*Math.PI/180;
+ const dLng=(b.lng-a.lng)*Math.PI/180;
+ const h=Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
+ return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
+}
+function formatDistance(m){
+ if(!isFinite(m)) return "0 m";
+ if(m<1000) return m.toFixed(1)+" m";
+ return (m/1000).toFixed(3)+" km";
+}
+function totalDistance(){
+ let total=0;
+ for(let i=1;i<project.length;i++) total+=distanceMeters(project[i-1],project[i]);
+ return total;
+}
+function renderDistances(){
+ if(!document.getElementById("totalDistanceOut")) return;
+ totalDistanceOut.textContent=formatDistance(totalDistance());
+ if(project.length<2){
+   distanceList.innerHTML='<p class="muted">Adicione pelo menos 2 pontos para calcular distância.</p>';
+   return;
+ }
+ let accumulated=0;
+ distanceList.innerHTML=project.slice(1).map((p,i)=>{
+   const from=project[i];
+   const d=distanceMeters(from,p);
+   accumulated+=d;
+   return `<div class="item"><span>${from.name} → ${p.name}<br><span class="tiny">Acumulado: ${formatDistance(accumulated)}</span></span><strong>${formatDistance(d)}</strong></div>`;
+ }).join("");
+}
+function renderPoints(){
+ pointCount.textContent=project.length+" pontos";
+ pointsList.innerHTML=project.length?project.map((p,i)=>`<div class="queueItem"><div class="row"><div><strong>${i+1}. ${p.name} — Poste ${p.pole}</strong><br><span class="muted">${p.primary} + ${p.secondary}</span><br><span class="tiny">Trecho: ${p.lineType||"MT"} ${p.lineType==="MT" ? "• Cabo "+(p.mtCable||"") : ""}</span><br><span class="tiny">${p.lat.toFixed(7)}, ${p.lng.toFixed(7)} • ±${p.acc.toFixed(1)} m</span><br><span class="tiny">${p.obs||""}</span></div><button class="btn small danger" onclick="removePoint(${i})">X</button></div></div>`).join(""):'<p class="muted">Nenhum ponto adicionado.</p>';
+}
+function addItems(total,items){Object.keys(items).forEach(k=>total[k]=(total[k]||0)+items[k]);}
+function renderMaterials(){
+ const total={};
+ project.forEach((p,i)=>{
+   addItems(total,{["Poste "+p.pole]:1});
+   addItems(total,primaryStructures[p.primary]||{});
+   addItems(total,secondaryStructures[p.secondary]||secondaryStructures[String(p.secondary||"").replace("I","")]||{});
+   if(i>0){
+     const d=distanceMeters(project[i-1],p);
+     if((p.lineType||"MT")==="MT") total["Cabo MT "+(p.mtCable||"não informado")+" (m)"]=(total["Cabo MT "+(p.mtCable||"não informado")+" (m)"]||0)+d;
+     else total["Cabo BT multiplexado (m)"]=(total["Cabo BT multiplexado (m)"]||0)+d;
+   }
+ });
+ materialList.innerHTML=Object.keys(total).length?Object.keys(total).sort().map(k=>`<div class="item"><span>${k}</span><strong>${String(k).includes("(m)")?total[k].toFixed(1):total[k]}</strong></div>`).join(""):'<p class="muted">Adicione pontos no projeto GPS para gerar materiais.</p>';
+}
+function renderDB(){dbList.innerHTML=`<h3>Cabos MT</h3>${mtCables.map(c=>`<div class="item"><span>${c}</span><strong>selecionável</strong></div>`).join("")}<br><h3>Primária</h3>${Object.keys(primaryStructures).map(k=>`<div class="item"><span>${k}</span><strong>${Object.keys(primaryStructures[k]).length} itens</strong></div>`).join("")}<br><h3>Secundária</h3>${Object.keys(secondaryStructures).map(k=>`<div class="item"><span>${k}</span><strong>${Object.keys(secondaryStructures[k]).length} itens</strong></div>`).join("")}`;}
+function csvText(){return "nome,lat,lng,precisao,poste,primaria,secundaria,obs\\n"+project.map(p=>`${p.name},${p.lat},${p.lng},${p.acc},${p.pole},${p.primary},${p.secondary},"${(p.obs||'').replaceAll('"','')}"`).join("\\n");}
+function downloadFile(name,text,type){const blob=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);}
+function downloadCSV(){downloadFile("projeto_redecalc_gps.csv",csvText(),"text/csv");}
+function downloadJSON(){downloadFile("projeto_redecalc_gps.json",JSON.stringify(project,null,2),"application/json");}
+function copyLink(){navigator.clipboard.writeText(project.map(p=>`${p.name}: ${p.lat}, ${p.lng}`).join("\\n")).then(()=>alert("Coordenadas copiadas."));}
+
+
+function saveSheetData(){
+ sheetData={
+  city:cityInput.value||"",
+  work:workInput.value||"",
+  local:localInput.value||"",
+  feeder:feederInput.value||"",
+  note:noteInput.value||"",
+  rt:rtInput.value||"",
+  scale:scaleInput.value||"1/500"
+ };
+ localStorage.setItem("redecalc_sheet_data",JSON.stringify(sheetData));
+ alert("Dados da prancha salvos.");
+}
+function loadSheetData(){
+ if(!document.getElementById("cityInput")) return;
+ cityInput.value=sheetData.city||"";
+ workInput.value=sheetData.work||"";
+ localInput.value=sheetData.local||"";
+ feederInput.value=sheetData.feeder||"";
+ noteInput.value=sheetData.note||"";
+ rtInput.value=sheetData.rt||"";
+ scaleInput.value=sheetData.scale||"1/500";
+}
+function sheetMapSvg(){
+ const b=bounds();
+ let svg=`<svg viewBox="0 0 1500 900" xmlns="http://www.w3.org/2000/svg">
+ <rect width="1500" height="900" fill="white"/>
+ <rect x="20" y="20" width="1460" height="860" fill="none" stroke="#111" stroke-width="3"/>
+ <text x="35" y="45" font-size="18" font-family="Arial" fill="#111">PLANIMETRIA - REDE MT/BT</text>`;
+ if(!project.length||!b){
+   svg+=`<text x="600" y="430" font-size="26" fill="#777">Sem pontos GPS adicionados</text></svg>`;
+   return svg;
+ }
+ const padX=90,padY=80,w=1320,h=690;
+ function pxy(pt){
+   const x=padX+(pt.lng-b.minLng)/(b.maxLng-b.minLng)*w;
+   const y=padY+h-(pt.lat-b.minLat)/(b.maxLat-b.minLat)*h;
+   return {x,y};
+ }
+ const pts=project.map(p=>pxy(p));
+ for(let i=1;i<pts.length;i++){
+   const a=pts[i-1], c=pts[i], type=project[i].lineType||"MT";
+   const dash=type==="MT"?'stroke-dasharray="16 12"':'';
+   svg+=`<line x1="${a.x}" y1="${a.y}" x2="${c.x}" y2="${c.y}" stroke="${type==="MT"?"#00cc44":"#ff00cc"}" stroke-width="5" ${dash}/>`;
+   const mx=(a.x+c.x)/2,my=(a.y+c.y)/2;
+   const d=distanceMeters(project[i-1],project[i]);
+   const angle=Math.atan2(c.y-a.y,c.x-a.x)*180/Math.PI;
+   svg+=`<g transform="translate(${mx},${my}) rotate(${angle})">
+     <rect x="-95" y="-18" width="190" height="30" fill="white" opacity=".86"/>
+     <text x="0" y="-4" font-size="15" text-anchor="middle" fill="${type==="MT"?"#00aa33":"#cc0099"}">${type} ${type==="MT"?(project[i].mtCable||""):"BT"} - ${formatDistance(d)}</text>
+   </g>`;
+ }
+ pts.forEach((p,i)=>{
+   const pt=project[i];
+   svg+=`<rect x="${p.x-8}" y="${p.y-8}" width="16" height="16" fill="${i===0?"#111":"#fff"}" stroke="#111" stroke-width="3"/>
+   <text x="${p.x+14}" y="${p.y-16}" font-size="15" font-weight="bold" fill="#111">${pt.name}</text>
+   <text x="${p.x+14}" y="${p.y+2}" font-size="13" fill="#111">Poste ${pt.pole}</text>
+   <text x="${p.x+14}" y="${p.y+18}" font-size="13" fill="#111">${pt.primary} / ${pt.secondary}</text>`;
+ });
+ svg+=`</svg>`;
+ return svg;
+}
+function legendHtml(){
+ return `<div class="legend">
+ <h3>LEGENDA</h3>
+ <div><span class="sym boxBlack"></span> POSTE EXISTENTE / INICIAL</div>
+ <div><span class="sym boxWhite"></span> POSTE À INSTALAR</div>
+ <div><span class="sym mt"></span> CABO DE MT PROJ.</div>
+ <div><span class="sym bt"></span> CABO DE BT PROJ.</div>
+ <div><span class="sym ground">⏚</span> ATERRAMENTO</div>
+ <div><span class="sym trafo">⊗</span> TRAFO À INSTALAR</div>
+ <div><span class="sym key">△</span> CHAVE FUSÍVEL</div>
+ <div><span class="sym pr">⚡</span> PARA-RAIO</div>
+ </div>`;
+}
+function saveSheetPDF(){
+ if(!project.length){alert("Adicione pontos ao projeto antes de gerar a prancha.");return;}
+ saveSheetData();
+ const total=materialsObject();
+ let acc=0;
+ const coordRows=project.map((p,i)=>{
+   const d=i===0?0:distanceMeters(project[i-1],p); acc+=d;
+   return `<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${p.lat.toFixed(7)}</td><td>${p.lng.toFixed(7)}</td><td>${escapeHtml(p.pole)}</td><td>${escapeHtml(p.primary)}</td><td>${escapeHtml(p.secondary)}</td><td>${escapeHtml(p.lineType||"MT")}</td><td>${escapeHtml(p.mtCable||"")}</td><td>${d.toFixed(1)} m</td></tr>`;
+ }).join("");
+ const materialRows=Object.keys(total).sort().map(k=>`<tr><td>${escapeHtml(k)}</td><td>${String(k).includes("(m)")?total[k].toFixed(1):total[k]}</td></tr>`).join("");
+ const sheet=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Prancha RedeCalc Pro</title>
+ <style>
+ body{margin:0;background:#777;font-family:Arial,Helvetica,sans-serif;color:#111}
+ .page{width:1587px;height:1122px;background:white;margin:10px auto;position:relative;box-shadow:0 0 8px #000}
+ .border{position:absolute;left:30px;top:20px;right:30px;bottom:30px;border:3px solid #111}
+ .map{position:absolute;left:50px;top:40px;width:1487px;height:735px;border:2px solid #111;overflow:hidden}
+ .map svg{width:100%;height:100%}
+ .bottom{position:absolute;left:50px;right:50px;bottom:50px;height:300px;border:2px solid #111;display:grid;grid-template-columns:330px 400px 260px 1fr}
+ .cell{border-right:2px solid #111;padding:10px;font-size:13px;overflow:hidden}.cell:last-child{border-right:0}
+ h1{font-size:18px;margin:0 0 8px;text-align:center}h2{font-size:15px;margin:0 0 6px}h3{font-size:13px;margin:0 0 6px}
+ table{width:100%;border-collapse:collapse;font-size:10px}td,th{border:1px solid #333;padding:3px;text-align:left}th{background:#eee}
+ .legend div{font-size:12px;margin:5px 0}.sym{display:inline-block;width:45px;margin-right:6px}.boxBlack:before{content:"■"}.boxWhite:before{content:"□"}.mt{border-top:3px dashed #00cc44;vertical-align:middle}.bt{border-top:3px solid #ff00cc;vertical-align:middle}.ground,.trafo,.key,.pr{font-weight:bold;text-align:center}
+ .titleblock{font-size:12px}.titleblock div{border-bottom:1px solid #aaa;padding:3px 0}
+ .small{font-size:10px}.printBtn{position:fixed;top:15px;left:15px;z-index:5;padding:12px 18px;background:#f97316;border:0;border-radius:8px;font-weight:bold}
+ @media print{body{background:white}.page{margin:0;box-shadow:none;transform:scale(.72);transform-origin:top left}.printBtn{display:none}@page{size:A3 landscape;margin:4mm}}
+ </style></head><body>
+ <button class="printBtn" onclick="window.print()">Imprimir / Salvar em PDF</button>
+ <div class="page"><div class="border"></div>
+ <div class="map">${sheetMapSvg()}</div>
+ <div class="bottom">
+   <div class="cell">${legendHtml()}<hr><div class="small">Distância total: <strong>${formatDistance(totalDistance())}</strong></div></div>
+   <div class="cell"><h3>COORDENADAS / PONTOS</h3><table><thead><tr><th>#</th><th>Ponto</th><th>Lat.</th><th>Long.</th><th>Poste</th><th>MT</th><th>BT</th><th>Rede</th><th>Cabo</th><th>Vão</th></tr></thead><tbody>${coordRows}</tbody></table></div>
+   <div class="cell"><h3>MATERIAIS</h3><table><thead><tr><th>Material</th><th>Qtd.</th></tr></thead><tbody>${materialRows}</tbody></table></div>
+   <div class="cell titleblock">
+     <h1>EQUATORIAL / EQLT</h1>
+     <div><strong>ASSUNTO:</strong> ${escapeHtml(sheetData.work||"PROJETO DE REDE MT/BT")}</div>
+     <div><strong>MUNICÍPIO:</strong> ${escapeHtml(sheetData.city||"")}</div>
+     <div><strong>LOCAL:</strong> ${escapeHtml(sheetData.local||"")}</div>
+     <div><strong>OBRA:</strong> ${escapeHtml(sheetData.note||"")}</div>
+     <div><strong>ALIMENTADOR:</strong> ${escapeHtml(sheetData.feeder||"")}</div>
+     <div><strong>ESCALA:</strong> ${escapeHtml(sheetData.scale||"1/500")} &nbsp; <strong>FORMATO:</strong> A1/A3</div>
+     <div><strong>DATA:</strong> ${new Date().toLocaleDateString("pt-BR")}</div>
+     <div><strong>R. TÉCNICO/ENGº:</strong> ${escapeHtml(sheetData.rt||"")}</div>
+     <br><h3>ANÁLISE MODIFICAÇÕES</h3>
+     <table><tr><th>REV</th><th>DISCRIMINAÇÃO</th><th>DATA</th><th>RESP.</th></tr><tr><td>00</td><td>Emissão Inicial</td><td>${new Date().toLocaleDateString("pt-BR")}</td><td></td></tr><tr><td>01</td><td></td><td></td><td></td></tr></table>
+   </div>
+ </div></div></body></html>`;
+ const win=window.open("","_blank");
+ if(!win){alert("Permita pop-ups para gerar a prancha.");return;}
+ win.document.open();win.document.write(sheet);win.document.close();
+ setTimeout(()=>win.print(),900);
+}
+function escapeHtml(text){
+ return String(text||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function materialsObject(){
+ const total={};
+ project.forEach((p,i)=>{
+   addItems(total,{["Poste "+p.pole]:1});
+   addItems(total,primaryStructures[p.primary]||{});
+   addItems(total,secondaryStructures[p.secondary]||secondaryStructures[String(p.secondary||"").replace("I","")]||{});
+   if(i>0){
+     const d=distanceMeters(project[i-1],p);
+     if((p.lineType||"MT")==="MT") total["Cabo MT "+(p.mtCable||"não informado")+" (m)"]=(total["Cabo MT "+(p.mtCable||"não informado")+" (m)"]||0)+d;
+     else total["Cabo BT multiplexado (m)"]=(total["Cabo BT multiplexado (m)"]||0)+d;
+   }
+ });
+ return total;
+}
+function saveProjectPDF(){
+ if(!project.length){alert("Adicione pontos ao projeto antes de salvar em PDF.");return;}
+ const mapSvg = document.getElementById("projectSvg").outerHTML;
+ const total = materialsObject();
+ let acc=0;
+ const rows = project.map((p,i)=>{
+   const d=i===0?0:distanceMeters(project[i-1],p);
+   acc+=d;
+   return `<tr>
+     <td>${i+1}</td>
+     <td>${escapeHtml(p.name)}</td>
+     <td>${escapeHtml(p.pole)}</td>
+     <td>${escapeHtml(p.primary)}</td>
+     <td>${escapeHtml(p.secondary)}</td>
+     <td>${escapeHtml(p.lineType||"MT")}</td>
+     <td>${escapeHtml(p.mtCable||"")}</td>
+     <td>${d.toFixed(1)} m</td>
+     <td>${acc.toFixed(1)} m</td>
+     <td>${p.lat.toFixed(7)}, ${p.lng.toFixed(7)}</td>
+   </tr>`;
+ }).join("");
+ const materialRows = Object.keys(total).sort().map(k=>`<tr><td>${escapeHtml(k)}</td><td>${String(k).includes("(m)")?total[k].toFixed(1):total[k]}</td></tr>`).join("");
+ const htmlPDF = `<!DOCTYPE html>
+ <html lang="pt-BR">
+ <head>
+ <meta charset="UTF-8">
+ <title>Relatório RedeCalc Pro GPS</title>
+ <style>
+   body{font-family:Arial,Helvetica,sans-serif;margin:24px;color:#111}
+   h1{font-size:24px;margin:0 0 6px}
+   h2{font-size:18px;margin-top:22px;border-bottom:2px solid #f97316;padding-bottom:5px}
+   .muted{color:#555;font-size:12px}
+   table{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}
+   th,td{border:1px solid #ccc;padding:6px;text-align:left;vertical-align:top}
+   th{background:#f3f4f6}
+   .box{border:1px solid #ccc;border-radius:10px;padding:12px;margin:12px 0}
+   .map svg{width:100%;height:420px;border:1px solid #ccc;border-radius:8px}
+   .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+   .summary div{border:1px solid #ccc;border-radius:8px;padding:10px}
+   @media print{button{display:none}body{margin:12mm}.pagebreak{page-break-before:always}}
+ </style>
+ </head>
+ <body>
+   <button onclick="window.print()" style="padding:12px 18px;background:#f97316;border:0;border-radius:8px;font-weight:bold">Imprimir / Salvar em PDF</button>
+   <h1>Relatório de Projeto — RedeCalc Pro GPS</h1>
+   <p class="muted">Gerado em ${new Date().toLocaleString("pt-BR")}</p>
+   <div class="summary">
+     <div><strong>Pontos</strong><br>${project.length}</div>
+     <div><strong>Distância total</strong><br>${formatDistance(totalDistance())}</div>
+     <div><strong>Tipo</strong><br>MT/BT georreferenciado</div>
+   </div>
+   <h2>Mapa simplificado do traçado</h2>
+   <div class="map">${mapSvg}</div>
+   <p class="muted">Linha vermelha tracejada = MT. Linha vermelha contínua = BT.</p>
+   <h2>Pontos GPS e distâncias</h2>
+   <table>
+     <thead><tr><th>#</th><th>Ponto</th><th>Poste</th><th>Primária</th><th>Secundária</th><th>Trecho</th><th>Cabo MT</th><th>Distância</th><th>Acumulado</th><th>Coordenadas</th></tr></thead>
+     <tbody>${rows}</tbody>
+   </table>
+   <h2>Lista consolidada de materiais</h2>
+   <table>
+     <thead><tr><th>Material</th><th>Quantidade</th></tr></thead>
+     <tbody>${materialRows}</tbody>
+   </table>
+   <div class="box">
+     <strong>Observação técnica:</strong><br>
+     Este relatório é referência operacional. A execução deve seguir norma vigente da concessionária, projeto aprovado, NR-10 e responsável técnico.
+   </div>
+ </body>
+ </html>`;
+ const win = window.open("", "_blank");
+ if(!win){alert("O navegador bloqueou a janela. Permita pop-ups para salvar o PDF.");return;}
+ win.document.open();
+ win.document.write(htmlPDF);
+ win.document.close();
+ setTimeout(()=>win.print(),700);
+}
+function renderAll(){renderMap();renderPoints();renderDistances();renderMaterials();renderDB();loadSheetData();}
+fillSelects();renderAll();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.error));}
 </script>
 </body>

@@ -1,7 +1,7 @@
 {
-  "name": "redecalc-pro-mt-bt",
-  "version": "2.0.0",
-  "description": "App de lista de materiais MT/BT com imagens das estruturas.",
+  "name": "redecalc-pro-gps",
+  "version": "5.0.0",
+  "description": "RedeCalc Pro com GPS e desenho de projeto.",
   "scripts": {
     "android:init": "npx cap add android",
     "android:sync": "npx cap sync android",

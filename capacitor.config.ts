@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'br.com.redecalcpro.mbbt',
-  appName: 'RedeCalc Pro',
+  appId: 'br.com.redecalcpro.gps',
+  appName: 'RedeCalc Pro GPS',
   webDir: '.',
   bundledWebRuntime: false
 };
